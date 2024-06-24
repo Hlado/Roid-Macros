@@ -257,6 +257,19 @@ function Roids.ValidateHp(unit, bigger, amount)
     return powerPercent > tonumber(amount);
 end
 
+-- Checks whether or not target has more or less combo points than the given amount
+-- bigger: 1 if the combo points needs to be bigger, 0 if it needs to be less
+-- amount: The required amount
+-- returns: True or false
+function Roids.ValidateCp(bigger, amount)
+    local cp = GetComboPoints();
+    if bigger == 0 then
+        return cp < tonumber(amount);
+    end
+    
+    return cp > tonumber(amount);
+end
+
 -- Checks whether the given creatureType is the same as the target's creature type
 -- creatureType: The type to check
 -- target: The target's unitID
@@ -374,6 +387,9 @@ Roids.Keywords = {
             elseif v == "shift" and not IsShiftKeyDown() then
                 modifiersPressed = false;
                 break;
+            elseif v == "none" and (IsShiftKeyDown() or IsAltKeyDown() or IsControlKeyDown()) then
+                modifiersPressed = false;
+                break;
             end
         end
         
@@ -489,6 +505,10 @@ Roids.Keywords = {
         return Roids.ValidateHp("player", conditionals.myhp.bigger, conditionals.myhp.amount);
     end,
     
+    cp = function(conditionals)
+        return Roids.ValidateCp(conditionals.cp.bigger, conditionals.cp.amount);
+    end,
+
     type = function(conditionals)
         return Roids.ValidateCreatureType(conditionals.type, conditionals.target);
     end,
